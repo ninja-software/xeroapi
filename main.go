@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"logrus"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -14,10 +13,9 @@ import (
 	"github.com/XeroAPI/xerogolang/accounting"
 	"github.com/gofrs/uuid"
 	"github.com/markbates/goth"
+	"github.com/sirupsen/logrus"
 	"github.com/teris-io/shortid"
 	"go.uber.org/ratelimit"
-	"github.com/sirupsen/logrusrus"
-
 )
 
 // Notes:
