@@ -1,9 +1,10 @@
-package main
+package xeroapi
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"logrus"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -15,9 +16,8 @@ import (
 	"github.com/markbates/goth"
 	"github.com/teris-io/shortid"
 	"go.uber.org/ratelimit"
+	"github.com/sirupsen/logrusrus"
 
-	"git.ninjadojo.com.au/source-energy/hotsource/server/pkg/helpers"
-	"git.ninjadojo.com.au/source-energy/hotsource/server/pkg/log"
 )
 
 // Notes:
@@ -46,24 +46,24 @@ type QueryMap map[string]string
 // New creates a new Xero client
 func New(method, key, secret, callbackURL, privateKeyPath, userAgentString string, timeout time.Duration) *Client {
 	x := xerogolang.New(key, secret, callbackURL)
-	x.PrivateKey = helpers.ReadPrivateKeyFromPath(privateKeyPath)
+	x.PrivateKey = ReadPrivateKeyFromPath(privateKeyPath)
 	x.HTTPClient = &http.Client{Timeout: timeout}
 	x.Method = method
-	log.Debugln("Xero-ClientKey", x.ClientKey)
-	log.Debugln("Xero-Secret", x.Secret)
-	log.Debugln("Xero-CallbackURL", x.CallbackURL)
-	log.Debugln("Xero-HTTPClient", x.HTTPClient)
-	log.Debugln("Xero-Method", x.Method)
-	log.Debugln("Xero-UserAgentString", x.UserAgentString)
+	logrus.Debugln("Xero-ClientKey", x.ClientKey)
+	logrus.Debugln("Xero-Secret", x.Secret)
+	logrus.Debugln("Xero-CallbackURL", x.CallbackURL)
+	logrus.Debugln("Xero-HTTPClient", x.HTTPClient)
+	logrus.Debugln("Xero-Method", x.Method)
+	logrus.Debugln("Xero-UserAgentString", x.UserAgentString)
 
 	sess, err := x.BeginAuth("")
 	if err != nil {
-		log.Fatalln(err)
+		logrus.Fatalln(err)
 	}
 
 	users, err := accounting.FindUsers(x, sess, nil)
 	if err != nil {
-		log.Fatalln(err)
+		logrus.Fatalln(err)
 	}
 	fmt.Println(users)
 	return &Client{x, sess, ratelimit.New(1)}
@@ -166,7 +166,7 @@ func (c *Client) NoteCreateForContact(xeroContactUUID, body string) error {
 	if err != nil {
 		return err
 	}
-	log.Debugln(string(b))
+	logrus.Debugln(string(b))
 	return nil
 }
 
